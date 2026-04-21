@@ -1,0 +1,11 @@
+services:
+  db:
+    image: mysql:8.4.8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # 루트 비밀번호 (원하는 것으로 수정)
+      MYSQL_DATABASE: demo_mysql        # 처음에 자동 생성할 DB 이름
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./demo-database-data/mysql:/var/lib/mysql      # 데이터 저장 위치 연결
