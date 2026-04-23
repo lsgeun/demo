@@ -19,6 +19,10 @@ public class Expense {
     private Integer amount;
     private Date date;
 
+    @Version  // 낙관적 잠금을 위한 버전 필드 추가
+    @Column(nullable = false)
+    private Long version = 0L;
+
     public void decreaseAmount(int amount) {
         if (this.amount - amount < 0) {
             throw new DomainException("비용량 감소 에러");

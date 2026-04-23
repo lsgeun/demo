@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,6 +53,16 @@ public class SimpleTest {
                     .uri("http://localhost:" + port + "/expense/{id}/decreaseAmount?amount=" + requestAmount, id)
                     .retrieve()
                     .bodyToMono(String.class) // 응답 바디(JSON 등)를 문자열로 받음
+                    // 29초
+                    // .retryWhen(Retry.max(100) // 최대 100번까지 다시 시도
+                    //         .filter(throwable -> throwable.getMessage().contains("500")) // 500 에러일 때 재시도
+                    // )
+                    // 37초
+                    .retryWhen(Retry.backoff(100, Duration.ofMillis(10)) // 최대 100번, 시작은 10ms 대기
+                            .jitter(0.75) // 대기 시간에 75% 정도의 무작위성 추가 (Jitter)
+                            .filter(throwable -> throwable instanceof WebClientResponseException &&
+                                    ((WebClientResponseException) throwable).getStatusCode().is5xxServerError())
+                    )
                     .doOnNext(result -> {
                         System.out.println(result); // 실행 시점의 amount 변화 출력
                     })
