@@ -6,6 +6,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface ExpenseMapper {
 
-    Expense toExpense(ExpenseDto.ReadRequestDto readRequestDto);
+    Expense toExpense(ExpenseDto.RequestDto readRequestDto);
     ExpenseDto.ResponseDto toResponseDto(Expense expense);
 }

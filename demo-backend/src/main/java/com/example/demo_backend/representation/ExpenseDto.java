@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class ExpenseDto {
     @Value
-    public static class ReadRequestDto {
+    public static class RequestDto {
         private Long id;
         private Integer amount;
         private Date date;
